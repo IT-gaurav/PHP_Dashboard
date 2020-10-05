@@ -47,6 +47,38 @@ class User
     }
 
 
+    public function save($connection){
+        include('../controller/PHPExcel-1.8/Classes/PHPExcel/IOFactory.php');
+        
+        $inputFileName = realpath($_POST['file']);
+
+        try {
+            $inputFileType = PHPExcel_IOFactory::identify($inputFileName);
+            $objReader = PHPExcel_IOFactory::createReader($inputFileType);
+            $objPHPExcel = $objReader->load($inputFileName);
+        } catch (Exception $e) {
+            die('Error loading file "' . pathinfo($inputFileName, PATHINFO_BASENAME) . '": ' . 
+                $e->getMessage());
+        }
+
+        $sheet = $objPHPExcel->getSheet(0);
+        $highestRow = $sheet->getHighestRow();
+        $highestColumn = $sheet->getHighestColumn();
+        $arr = [];
+
+        for ($row = 1; $row <= $highestRow; $row++) { 
+            $rowData = $sheet->rangeToArray('A' . $row . ':' . $highestColumn . $row, null, true, false,true);
+            array_push($arr,$rowData[$row]);
+        }
+        $json = json_encode($arr);
+
+        $sql = "UPDATE users SET excel_file =? WHERE email =?";
+        $prepare = $connection->prepare($sql);
+        $response = $prepare->execute([$json,$this->email]);
+        return $response;
+    }
+
+
     /**
      * Get the value of lname
      */ 
