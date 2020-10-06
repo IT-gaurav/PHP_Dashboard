@@ -67,7 +67,7 @@ class User
         $arr = [];
 
         for ($row = 1; $row <= $highestRow; $row++) { 
-            $rowData = $sheet->rangeToArray('A' . $row . ':' . $highestColumn . $row, null, true, false,true);
+            $rowData = $sheet->rangeToArray('A' . $row . ':' . $highestColumn . $row, "", true, false,true);
             array_push($arr,$rowData[$row]);
         }
         $json = json_encode($arr);
