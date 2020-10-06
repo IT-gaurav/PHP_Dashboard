@@ -1,14 +1,15 @@
 <?php
 class User
 {
+    // properties of user class
     private $fname;
     private $lname;
     private $email;
     private $pass;
     private $files = [];
 
-
-    public function __construct($fname=null,$lname=null,$email=null,$pass=null)
+    // constructor
+    public function __construct($fname = null, $lname = null, $email = null, $pass = null)
     {
         $this->fname = $fname;
         $this->lname = $lname;
@@ -16,19 +17,22 @@ class User
         $this->pass = $pass;
     }
 
+    // registering a user
     public function register($connection)
     {
-        $fname= $this->fname;
-        $lname = $this->lname; 
-        $email = $this->email; 
-        $pass = $this->pass; 
+        $fname = $this->fname;
+        $lname = $this->lname;
+        $email = $this->email;
+        $pass = $this->pass;
 
-        $sql = "INSERT INTO users VALUES('$fname','$lname','$email','$pass')";
+        // sql query for inserting user's registeration information into database
+        $sql = "INSERT INTO users VALUES('$fname','$lname','$email','$pass',null)";
 
         $response = $connection->exec($sql);
-        return $response; 
+        return $response;
     }
 
+    // searching user
     public function findUser($connection)
     {
         $sql = "SELECT first_name, last_name, password FROM users WHERE email =?";
@@ -43,13 +47,14 @@ class User
             $this->pass = $tempUser['password'];
             return true;
         }
-        return false; 
+        return false;
     }
 
-
-    public function save($connection){
+    // saving excel file
+    public function save($connection)
+    {
         include('../controller/PHPExcel-1.8/Classes/PHPExcel/IOFactory.php');
-        
+
         $inputFileName = realpath($_POST['file']);
 
         try {
@@ -57,7 +62,7 @@ class User
             $objReader = PHPExcel_IOFactory::createReader($inputFileType);
             $objPHPExcel = $objReader->load($inputFileName);
         } catch (Exception $e) {
-            die('Error loading file "' . pathinfo($inputFileName, PATHINFO_BASENAME) . '": ' . 
+            die('Error loading file "' . pathinfo($inputFileName, PATHINFO_BASENAME) . '": ' .
                 $e->getMessage());
         }
 
@@ -66,22 +71,24 @@ class User
         $highestColumn = $sheet->getHighestColumn();
         $arr = [];
 
-        for ($row = 1; $row <= $highestRow; $row++) { 
-            $rowData = $sheet->rangeToArray('A' . $row . ':' . $highestColumn . $row, "", true, false,true);
-            array_push($arr,$rowData[$row]);
+        for ($row = 1; $row <= $highestRow; $row++) {
+            $rowData = $sheet->rangeToArray('A' . $row . ':' . $highestColumn . $row, "", true, false, true);
+            array_push($arr, $rowData[$row]);
         }
         $json = json_encode($arr);
 
         $sql = "UPDATE users SET excel_file =? WHERE email =?";
         $prepare = $connection->prepare($sql);
-        $response = $prepare->execute([$json,$this->email]);
+        $response = $prepare->execute([$json, $this->email]);
         return $response;
     }
 
 
+    // getter setter of the properties
+
     /**
      * Get the value of lname
-     */ 
+     */
     public function getLname()
     {
         return $this->lname;
@@ -91,7 +98,7 @@ class User
      * Set the value of lname
      *
      * @return  self
-     */ 
+     */
     public function setLname($lname)
     {
         $this->lname = $lname;
@@ -101,7 +108,7 @@ class User
 
     /**
      * Get the value of fname
-     */ 
+     */
     public function getFname()
     {
         return $this->fname;
@@ -111,7 +118,7 @@ class User
      * Set the value of fname
      *
      * @return  self
-     */ 
+     */
     public function setFname($fname)
     {
         $this->fname = $fname;
@@ -121,7 +128,7 @@ class User
 
     /**
      * Get the value of email
-     */ 
+     */
     public function getEmail()
     {
         return $this->email;
@@ -131,7 +138,7 @@ class User
      * Set the value of email
      *
      * @return  self
-     */ 
+     */
     public function setEmail($email)
     {
         $this->email = $email;
@@ -141,7 +148,7 @@ class User
 
     /**
      * Get the value of pass
-     */ 
+     */
     public function getPass()
     {
         return $this->pass;
@@ -151,7 +158,7 @@ class User
      * Set the value of pass
      *
      * @return  self
-     */ 
+     */
     public function setPass($pass)
     {
         $this->pass = $pass;
@@ -161,7 +168,7 @@ class User
 
     /**
      * Get the value of files
-     */ 
+     */
     public function getFiles()
     {
         return $this->files;
@@ -171,7 +178,7 @@ class User
      * Set the value of files
      *
      * @return  self
-     */ 
+     */
     public function setFiles($files)
     {
         $this->files = $files;

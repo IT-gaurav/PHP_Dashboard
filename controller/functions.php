@@ -6,24 +6,25 @@ $dashboard = '../view/dashboard.php';
 
 session_start();
 
-function register($connection){
+function register($connection)
+{
     $fname = $_POST['fname'];
     $lname = $_POST['lname'];
     $email = $_POST['email'];
     $pass = md5($_POST['pass']);
-    $user = new User($fname,$lname,$email,$pass);
+    $user = new User($fname, $lname, $email, $pass);
 
     $response = $user->register($connection);
-
     if ($response) {
         $_SESSION['user'] = $user;
         header("Location: " . $GLOBALS['dashboard']);
-    }else{
+    } else {
         echo "Error";
     }
 }
 
-function login($connection){
+function login($connection)
+{
     $email = $_POST['email'];
     $pass = md5($_POST['pass']);
     $temp_user = new User();
@@ -37,22 +38,22 @@ function login($connection){
             $temp_user->setPass(null);
             $_SESSION['user'] = $temp_user;
             header("Location: " . $GLOBALS['dashboard']);
-        }else{
+        } else {
             echo "Error";
         }
     }
 }
 
 
-function save($connection){
+function save($connection)
+{
     $user = $_SESSION['user'];
     $response = $user->save($connection);
 
     if ($response) {
         $_SESSION['user'] = $user;
         header("Location: " . $GLOBALS['dashboard']);
-    }else{
+    } else {
         echo "Error";
     }
-
 }
